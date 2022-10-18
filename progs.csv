@@ -5,6 +5,7 @@
 ,htop,system monitor
 ,neovim,a tidier vim with some useful features
 ,trash-cli,trash on the terminal
+,sddm,A display manager
 ,wayland,wayland itself
 ,xorg-xwayland,xorg support for wayland
 ,kwin,plasma tiler
@@ -12,6 +13,7 @@
 ,plasma-wayland-session,plasma with wayland
 ,qt5-wayland,qt5 wayland support layer
 ,qtile,wayland compatible tiling window manager
+,wofi,A wayland runner
 ,swaylock,wayland lockscreen
 ,nemo,file manager
 ,wlogout,wayland logout/restart dialog
