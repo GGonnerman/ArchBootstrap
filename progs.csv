@@ -1,4 +1,74 @@
 #TAG,NAME IN REPO (or git url),PURPOSE (should be a verb phrase to sound right while installing)
-,man-db,lets you read the man pages of programs
-,tldr,gives examples of program usage
+,man-db,man page reader
+,sudo,allow superuser access
+,tldr,simplified man pages
+,htop,system monitor
+,neovim,a tidier vim with some useful features
+,trash-cli,trash on the terminal
+,wayland,wayland itself
+,xorg-xwayland,xorg support for wayland
+,kwin,plasma tiler
+,plasma-desktop,plasma desktop
+,plasma-wayland-session,plasma with wayland
+,qt5-wayland,qt5 wayland support layer
+,qtile,wayland compatible tiling window manager
+,swaylock,wayland lockscreen
+,nemo,file manager
+,wlogout,wayland logout/restart dialog
+,wireplumber,a pipewire session manager
+,pipewire,a sound server
+,pipewire-pulse,pipewire support for bluetooth devices
+,alsa-utils,required for pavucontrol support
+,pavucontrol,a terminal sound control gui
+,bluez,a bluetooth backend
+,bluez-utils,a bluetooth backend
+,blueberry,a bluetooth frontend
 ,firefox,a web browser
+,chromium,a web browser
+,notion,a note taking app
+,element,a matrix frontend
+,gparted,a disk management utility
+,gimp,a photo editor
+,openssh,a ssh client
+,syncthing,a program for syncing files
+,protonvpn-gui,an interface for protonvpn
+,yt-dlp,a web downloading tool
+,atomicparsley,a dependency for yt-dlp
+,flashplayer-standalone,a flash player for old flash games
+,obs-studio,a video recording program
+,vlc,video player
+,flameshot,wayland compatible screenshot tool
+,evince,pdf viewer
+,wl-clipboard,wayland clipboard manager
+,jdk-openjdk,java support
+,python,python support
+,python-pip,pip support
+,jupyterlab,python jupyter lab support
+,nodejs,nodejs/javascript support
+,virt-manager,virtual machine support
+,qemu-desktop,virtual machine support
+,libvirt,virtual machine support
+,edk2-ovmf,virtual machine support
+,dnsmasq,virtual machine support
+,iptables-nft,virtual machine support
+,docker,Docker support
+,docker-compose,Docker compose support
+,tor-browser,Tor browser
+,steam,Steam
+,teamviewer,Interactive screen sharing
+,zoom,Video calling
+,auto-cpufreq,automatic CPU speed & power optimizer
+,thermald,Fan activation
+,envycontrol,
+,zsh,bash with more features
+,samba,easy folder sharing
+,cups,printing support
+,snap-pac,Automatically take btrfs snapshots pre/post update
+,btrfs-assistant,Btrfs snapshot gui
+,firewalld,port blocking made easy
+,borgmatic,create automated backups
+,qdirstat,a visual file space analyzer
+,fsearch-git,a fash graphical file search utility
+,balena-etcher,flashes OS images to USBs
+,kitty,a terminal emulator
+,simple-mtpfs,a tool to mount android phones
