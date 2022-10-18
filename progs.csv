@@ -67,6 +67,7 @@
 ,cups,printing support
 ,snap-pac,Automatically take btrfs snapshots pre/post update
 ,btrfs-assistant,Btrfs snapshot gui
+,btrfs-progs,userspace btrfs utilities
 ,firewalld,port blocking made easy
 ,borgmatic,create automated backups
 ,qdirstat,a visual file space analyzer
