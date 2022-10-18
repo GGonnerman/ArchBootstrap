@@ -5,6 +5,7 @@
 ,htop,system monitor
 ,neovim,a tidier vim with some useful features
 ,trash-cli,trash on the terminal
+,cronie,a time-based job scheduler
 ,sddm,A display manager
 ,wayland,wayland itself
 ,xorg-xwayland,xorg support for wayland
@@ -68,6 +69,7 @@
 ,snap-pac,Automatically take btrfs snapshots pre/post update
 ,btrfs-assistant,Btrfs snapshot gui
 ,btrfs-progs,userspace btrfs utilities
+,grub-btrfs,show btrfs backups in grub menu
 ,firewalld,port blocking made easy
 ,borgmatic,create automated backups
 ,qdirstat,a visual file space analyzer
