@@ -12,6 +12,11 @@
 ,plasma-desktop,plasma desktop
 ,plasma-wayland-session,plasma with wayland
 ,qt5-wayland,qt5 wayland support layer
+,plasma,full plasma (including sound, wifi, clipboard, etc)
+,packagekit-qt5,backend for discover
+,flatpak,flatpak support for discover
+,upower,power management for kde
+,xdg-desktop-portal-kde,wayland xdg desktop support for kde
 ,qtile,wayland compatible tiling window manager
 ,wofi,A wayland runner
 ,swaylock,wayland lockscreen
