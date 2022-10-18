@@ -1,6 +1,5 @@
 #TAG,NAME IN REPO (or git url),PURPOSE (should be a verb phrase to sound right while installing)
 ,man-db,man page reader
-,sudo,allow superuser access
 ,tldr,simplified man pages
 ,htop,system monitor
 ,neovim,a tidier vim with some useful features
