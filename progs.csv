@@ -47,6 +47,7 @@
 ,python-pip,pip support
 ,jupyterlab,python jupyter lab support
 ,nodejs,nodejs/javascript support
+,npm,node package manager
 ,virt-manager,virtual machine support
 ,qemu-desktop,virtual machine support
 ,libvirt,virtual machine support
