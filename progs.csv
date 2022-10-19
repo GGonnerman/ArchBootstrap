@@ -71,10 +71,11 @@
 ,zsh,bash with more features
 ,samba,easy folder sharing
 ,cups,printing support
+,grub-btrfs,show btrfs backups in grub menu
 ,snap-pac,Automatically take btrfs snapshots pre/post update
+,snap-pac-grub,auto add grub enteries for snap-pac
 ,btrfs-assistant,Btrfs snapshot gui
 ,btrfs-progs,userspace btrfs utilities
-,grub-btrfs,show btrfs backups in grub menu
 ,firewalld,port blocking made easy
 ,borgmatic,create automated backups
 ,qdirstat,a visual file space analyzer
