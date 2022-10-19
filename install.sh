@@ -44,6 +44,10 @@ getveracryptpass() {
 	done
 }
 
+getveracryptid() {
+    veraid=$(whiptail --nocancel --inputbox "Enter the veracrypt device partition (e.g., /dev/vda4)" 10 60 3>&1 1>&2 2>&3 3>&1)
+}
+
 givesecondwarning() {
     whiptail --title "WARNING" \
         --yes-button "Yes, Let's do this!" \
@@ -101,6 +105,8 @@ getuserandpass || error "User exited."
 
 getveracryptpass || error "User exited."
 
+getveracryptid || error "User exited."
+
 givesecondwarning || error "User exited."
 
 querycpu
@@ -143,7 +149,7 @@ rankmirrors -n 12 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
 adduserandpass || error "Error adding username and/or password."
 
 ### Umount the ntfs drive to its not open (and so its not in new etc/fstab)
-umount /dev/vda4
+umount $veraid
 
 ### Use previously created (not nested) subvolume as download folder so its excluded from backups but isnt broken
 sudo -u "$name" mkdir -p /home/$name/downloads
@@ -159,9 +165,9 @@ genfstab -U / > /etc/fstab
 
 ### Setup veracrypt encrypted directory
 #### Veracrypt encrypt it
-veracrypt -t -c --volume-type="Normal" /dev/vda4 --encryption="AES" --hash="SHA-512" --filesystem="ntfs" --password="$vpass1" --pim=0
+veracrypt -t -c --volume-type="Normal" $veraid --encryption="AES" --hash="SHA-512" --filesystem="ntfs" --password="$vpass1" --pim=0
 #### Unlock the now encrypted drive
-echo -n "$vpass1" | cryptsetup tcryptOpen /dev/vda4 ext
+echo -n "$vpass1" | cryptsetup tcryptOpen $veraid ext
 #### Install ntfs on the unencrypted drive
 mkfs.ntfs /dev/mapper/ext
 #### Mount the unencrypted ntfs to the correct location
@@ -170,7 +176,7 @@ mount /dev/mapper/ext /mnt/ext
 #### Setup easy decryption for the future
 echo -e "\n/dev/mapper/ext /mnt/ext ntfs-3g uid=twoonesecond,gid=wheel,dmask=022,fmask=133 0 0" >> /etc/fstab
 echo -n "$vpass1" > /etc/ext
-echo -e "\next /dev/vda4 /etc/ext tcrypt-veracrypt" >> /etc/crypttab
+echo -e "\next $veraid /etc/ext tcrypt-veracrypt" >> /etc/crypttab
 
 ### Installed the specified microcode
 paru --noconfirm --needed -S "$cpu-ucode"
