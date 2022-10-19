@@ -21,7 +21,7 @@
 ,qtile,wayland compatible tiling window manager
 ,wofi,A wayland runner
 ,swaylock,wayland lockscreen
-,nemo,file manager
+,dolphin,file manager
 ,wlogout,wayland logout/restart dialog
 ,wireplumber,a pipewire session manager
 ,pipewire,a sound server
