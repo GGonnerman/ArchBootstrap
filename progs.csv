@@ -17,6 +17,7 @@
 ,flatpak,flatpak support for discover
 ,upower,power management for kde
 ,xdg-desktop-portal-kde,wayland xdg desktop support for kde
+,xdg-user-dirs,manage user directories
 ,qtile,wayland compatible tiling window manager
 ,wofi,A wayland runner
 ,swaylock,wayland lockscreen
