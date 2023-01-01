@@ -12,7 +12,7 @@
 ,plasma-desktop,plasma desktop
 ,plasma-wayland-session,plasma with wayland
 ,qt5-wayland,qt5 wayland support layer
-,plasma,full plasma (including sound, wifi, clipboard, etc)
+,plasma,full plasma (including sound wifi clipboard etc)
 ,packagekit-qt5,backend for discover
 ,flatpak,flatpak support for discover
 ,upower,power management for kde
@@ -22,7 +22,7 @@
 ,wofi,A wayland runner
 ,swaylock,wayland lockscreen
 ,dolphin,file manager
-,wlogout,wayland logout/restart dialog
+a,wlogout,wayland logout/restart dialog
 ,wireplumber,a pipewire session manager
 ,pipewire,a sound server
 ,pipewire-pulse,pipewire support for bluetooth devices
@@ -33,16 +33,16 @@
 ,blueberry,a bluetooth frontend
 ,firefox,a web browser
 ,chromium,a web browser
-,notion-app,a note taking app
+a,notion-app,a note taking app
 ,element,a matrix frontend
 ,gparted,a disk management utility
 ,gimp,a photo editor
 ,openssh,a ssh client
 ,syncthing,a program for syncing files
-,protonvpn-gui,an interface for protonvpn
+a,protonvpn-gui,an interface for protonvpn
 ,yt-dlp,a web downloading tool
 ,atomicparsley,a dependency for yt-dlp
-,flashplayer-standalone,a flash player for old flash games
+a,flashplayer-standalone,a flash player for old flash games
 ,obs-studio,a video recording program
 ,vlc,video player
 ,flameshot,wayland compatible screenshot tool
@@ -62,25 +62,26 @@
 ,iptables-nft,virtual machine support
 ,docker,Docker support
 ,docker-compose,Docker compose support
-,tor-browser,Tor browser
+a,tor-browser,Tor browser
 ,steam,Steam
-,teamviewer,Interactive screen sharing
-,zoom,Video calling
-,auto-cpufreq,automatic CPU speed & power optimizer
+a,teamviewer,Interactive screen sharing
+a,zoom,Video calling
+a,auto-cpufreq,automatic CPU speed & power optimizer
 ,thermald,Fan activation
-,envycontrol,
+a,envycontrol,
 ,zsh,bash with more features
 ,samba,easy folder sharing
 ,cups,printing support
 ,grub-btrfs,show btrfs backups in grub menu
 ,snap-pac,Automatically take btrfs snapshots pre/post update
-,snap-pac-grub,auto add grub enteries for snap-pac
-,btrfs-assistant,Btrfs snapshot gui
+a,snap-pac-grub,auto add grub enteries for snap-pac
+a,btrfs-assistant,Btrfs snapshot gui
 ,btrfs-progs,userspace btrfs utilities
 ,firewalld,port blocking made easy
 ,borgmatic,create automated backups
-,qdirstat,a visual file space analyzer
-,fsearch-git,a fash graphical file search utility
-,balena-etcher,flashes OS images to USBs
+a,qdirstat,a visual file space analyzer
+a,fsearch-git,a fash graphical file search utility
+a,balena-etcher,flashes OS images to USBs
 ,kitty,a terminal emulator
-,simple-mtpfs,a tool to mount android phones
+a,simple-mtpfs,a tool to mount android phones
+a,visual-studio-code-bin,a gui code editor
