@@ -1,4 +1,5 @@
-dotfilesrepo="https://github.com/GGonnerman/.dotfiles.git"
+dotfilesrepohttps="https://github.com/GGonnerman/.dotfiles.git"
+dotfilesrepossh="git@github.com:GGonnerman/.dotfiles.git"
 progsfile="https://raw.githubusercontent.com/GGonnerman/ArchBootstrap/master/progs.csv"
 wallpaperrepo="https://github.com/GGonnerman/Wallpapers.git"
 
@@ -199,6 +200,13 @@ paru --noconfirm --needed -S "$cpu-ucode"
 ### Disable COW for virt-manager directory before it is filled
 mkdir -p /var/lib/libvirt/images
 chattr +C /var/lib/libvirt/images
+
+### Setup dotfiles
+sudo -u "$name" git clone "$dotfilesrepohttps" "/home/$name/.dotfiles"
+pushd "/home/$name/.dotfiles"
+sudo -u "$name" git remote set-url origin "$dotfilesrepossh"
+sudo -u "$name" stow -S --adopt --dir="/home/$name/.dotfiles" --target="/home/$name" *
+popd
 
 ### Let users run sudo without password (for aur setup)
 echo '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' > /etc/sudoers.d/wheel_sudo
