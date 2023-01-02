@@ -75,7 +75,7 @@ adduserandpass() {
 		usermod -a -G wheel "$name" && mkdir -p /home/"$name" && chown "$name":"$name" /home/"$name"
 	export repodir="/home/$name/.local/src"
 	mkdir -p "$repodir"
-	chown -R "$name":wheel "$(dirname "$repodir")"
+	chown -R "$name":"$name" "$(dirname "$repodir")"
 	echo "$name:$pass1" | chpasswd
 	unset pass1 pass2
 }
@@ -165,7 +165,7 @@ umount $veraid
 ### Use previously created (not nested) subvolume as download folder so its excluded from backups but isnt broken
 sudo -u "$name" mkdir -p /home/$name/downloads
 mount -o compress=zstd,subvol=@downloads /dev/mapper/root /home/$name/downloads
-chown -R "$name":wheel /home/$name/downloads
+chown -R "$name":"$name" /home/$name/downloads
 genfstab -U / > /etc/fstab
 
 ### DONT USE: This creates a NESTED SUBVOLUME STRUCTURE which seems to be annoying to deal with
@@ -302,5 +302,3 @@ echo "%wheel ALL=(ALL:ALL) ALL" >/etc/sudoers.d/larbs-wheel-can-sudo
 echo "%wheel ALL=(ALL:ALL) NOPASSWD: /usr/bin/shutdown,/usr/bin/reboot,/usr/bin/systemctl suspend,/usr/bin/wifi-menu,/usr/bin/mount,/usr/bin/umount,/usr/bin/pacman -Syu,/usr/bin/pacman -Syyu,/usr/bin/pacman -Syyu --noconfirm,/usr/bin/loadkeys,/usr/bin/pacman -Syyuw --noconfirm,/usr/bin/pacman -S -u -y --config /etc/pacman.conf --,/usr/bin/pacman -S -y -u --config /etc/pacman.conf --" >/etc/sudoers.d/01-larbs-cmds-without-password
 
 echo "Finished running completely!"
-
-## How to deal with git stow and dotfiles? You have no valid ssh cert with github at time of creation...
