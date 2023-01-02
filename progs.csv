@@ -31,7 +31,8 @@ A,flashplayer-standalone,a flash player for old flash games
 ,upower,power management for kde
 ,firewalld,port blocking made easy
 # Tiling Window Manager Programs
-,qtile,tiling window manager
+,leftwm,tiling window manager
+,polybar,a status bar
 ,rofi,A program runner
 # Sound Support
 ,wireplumber,a pipewire session manager
