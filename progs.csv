@@ -1,87 +1,101 @@
 #TAG,NAME IN REPO (or git url),PURPOSE (should be a verb phrase to sound right while installing)
+# Xorg Support
+,xorg-server,a display server
+# Fundamental Programs
 ,man-db,man page reader
+,xdg-user-dirs,manage user directories
+# Command line tools
+,neovim,a tidier vim with some useful features
+,xclip,a clipboard manager
+,xdotool,automate keyboard and mouse actions
+,xorg-xkill,easily kill windows
+,trash-cli,trash on the terminal
 ,tldr,simplified man pages
 ,htop,system monitor
-,neovim,a tidier vim with some useful features
-,trash-cli,trash on the terminal
+# Utilities
 ,cronie,a time-based job scheduler
+,openssh,a ssh client
+,borgmatic,create automated backups
+A,simple-mtpfs,a tool to mount android phones
+,syncthing,a program for syncing files
+,samba,easy folder sharing
+,cups,printing support
+A,flashplayer-standalone,a flash player for old flash games
+# KDE/Plasma Programs
 ,sddm,A display manager
-,wayland,wayland itself
-,xorg-xwayland,xorg support for wayland
-,kwin,plasma tiler
-,plasma-desktop,plasma desktop
-,plasma-wayland-session,plasma with wayland
-,qt5-wayland,qt5 wayland support layer
 ,plasma,full plasma (including sound wifi clipboard etc)
+,plasma-desktop,plasma desktop
+,kwin,plasma tiler
 ,packagekit-qt5,backend for discover
-,flatpak,flatpak support for discover
 ,upower,power management for kde
-,xdg-desktop-portal-kde,wayland xdg desktop support for kde
-,xdg-user-dirs,manage user directories
-,qtile,wayland compatible tiling window manager
-,wofi,A wayland runner
-,swaylock,wayland lockscreen
-,dolphin,file manager
-a,wlogout,wayland logout/restart dialog
+,firewalld,port blocking made easy
+# Tiling Window Manager Programs
+,qtile,tiling window manager
+,rofi,A program runner
+# Sound Support
 ,wireplumber,a pipewire session manager
 ,pipewire,a sound server
 ,pipewire-pulse,pipewire support for bluetooth devices
 ,alsa-utils,required for pavucontrol support
 ,pavucontrol,a terminal sound control gui
+# Bluetooth Support
 ,bluez,a bluetooth backend
 ,bluez-utils,a bluetooth backend
 ,blueberry,a bluetooth frontend
-,firefox,a web browser
-,chromium,a web browser
-a,notion-app,a note taking app
-,element,a matrix frontend
-,gparted,a disk management utility
-,gimp,a photo editor
-,openssh,a ssh client
-,syncthing,a program for syncing files
-a,protonvpn-gui,an interface for protonvpn
+# Autolock with Gaussian Blur
+,i3lock,a lockscreen tool
+,scrot,a cli screenshot tool
+,imagemagick,cli image manipulator
+,xautolock,automatic lockscreen
+# Yt Sync support
 ,yt-dlp,a web downloading tool
 ,atomicparsley,a dependency for yt-dlp
-a,flashplayer-standalone,a flash player for old flash games
+# Gui Programs
+,dolphin,file manager
+,firefox,a web browser
+,chromium,a web browser
+A,notion-app,a note taking app
+,element,a matrix frontend
+,gparted,a disk management utility
+A,protonvpn-gui,an interface for protonvpn
+,rxvt-unicode,a terminal emulator
+,evince,pdf viewer
+A,qdirstat,a visual file space analyzer
+A,fsearch-git,a fash graphical file search utility
+A,balena-etcher,flashes OS images to USBs
+A,tor-browser,Tor browser
+,steam,Steam
+A,teamviewer,Interactive screen sharing
+A,zoom,Video calling
+# Media Programs
+,gimp,a photo editor
 ,obs-studio,a video recording program
 ,vlc,video player
-,flameshot,wayland compatible screenshot tool
-,evince,pdf viewer
-,wl-clipboard,wayland clipboard manager
+# Development Support 
+A,visual-studio-code-bin,a gui code editor
 ,jdk-openjdk,java support
 ,python,python support
 ,python-pip,pip support
 ,jupyterlab,python jupyter lab support
 ,nodejs,nodejs/javascript support
 ,npm,node package manager
+# Virtual Machine Support
 ,virt-manager,virtual machine support
 ,qemu-desktop,virtual machine support
 ,libvirt,virtual machine support
 ,edk2-ovmf,virtual machine support
 ,dnsmasq,virtual machine support
 ,iptables-nft,virtual machine support
+# Docker Support
 ,docker,Docker support
 ,docker-compose,Docker compose support
-a,tor-browser,Tor browser
-,steam,Steam
-a,teamviewer,Interactive screen sharing
-a,zoom,Video calling
-a,auto-cpufreq,automatic CPU speed & power optimizer
+# Power Management/Hardware Support
+A,auto-cpufreq,automatic CPU speed & power optimizer
 ,thermald,Fan activation
-a,envycontrol,
-,zsh,bash with more features
-,samba,easy folder sharing
-,cups,printing support
+A,envycontrol,
+# Btrfs Full Support
 ,grub-btrfs,show btrfs backups in grub menu
 ,snap-pac,Automatically take btrfs snapshots pre/post update
-a,snap-pac-grub,auto add grub enteries for snap-pac
-a,btrfs-assistant,Btrfs snapshot gui
+A,snap-pac-grub,auto add grub enteries for snap-pac
+A,btrfs-assistant,Btrfs snapshot gui
 ,btrfs-progs,userspace btrfs utilities
-,firewalld,port blocking made easy
-,borgmatic,create automated backups
-a,qdirstat,a visual file space analyzer
-a,fsearch-git,a fash graphical file search utility
-a,balena-etcher,flashes OS images to USBs
-,kitty,a terminal emulator
-a,simple-mtpfs,a tool to mount android phones
-a,visual-studio-code-bin,a gui code editor
