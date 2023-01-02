@@ -84,6 +84,11 @@ maininstall() {
 	paru --noconfirm --needed -S "$1" >/dev/null 2>&1
 }
 
+aurinstall() {
+	whiptail --title "Installation" --infobox "Installing \`$1\` ($n of $total). $1 $2" 9 70
+	sudo -u "$name" paru --noconfirm --needed -S "$1" >/dev/null 2>&1
+}
+
 installationloop() {
 	([ -f "$progsfile" ] && cp "$progsfile" /tmp/progs.csv) ||
 		curl -Ls "$progsfile" | sed '/^#/d' >/tmp/progs.csv
@@ -92,8 +97,14 @@ installationloop() {
 	while IFS=, read -r tag program comment; do
 		n=$((n + 1))
 		echo "$comment" | grep -q "^\".*\"$" &&
-		comment="$(echo "$comment" | sed -E "s/(^\"|\"$)//g")"
-		maininstall "$program" "$comment"
+			comment="$(echo "$comment" | sed -E "s/(^\"|\"$)//g")"
+
+		case "$tag" in
+		"A") aurinstall "$program" "$comment" ;;
+		#"G") gitmakeinstall "$program" "$comment" ;;
+		#"P") pipinstall "$program" "$comment" ;;
+		*) maininstall "$program" "$comment" ;;
+		esac
 	done </tmp/progs.csv
 }
 
@@ -133,7 +144,6 @@ sed -i "s/-j2/-j$(nproc)/;/^#MAKEFLAGS/s/^#//" /etc/makepkg.conf
 
 ### Update pacman database
 sudo pacman -Syyy --noconfirm
-
 pacman --noconfirm -S archlinux-keyring || error "Error automatically refreshing Arch keyring"
 
 ### Install a small number of progarms needed to install other programs
@@ -145,7 +155,7 @@ done
 cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
 rankmirrors -n 12 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
 
-### Add the user account with specific password
+## Add the user account with specific password
 adduserandpass || error "Error adding username and/or password."
 
 ### Umount the ntfs drive to its not open (and so its not in new etc/fstab)
@@ -164,15 +174,20 @@ genfstab -U / > /etc/fstab
 # mount -o compress=zstd,subvol=@home/$name/downloads /dev/mapper/root /home/$name/downloads
 
 ### Setup veracrypt encrypted directory
-#### Veracrypt encrypt it
+
+#### Veracrypt encrypt it and format to ntfs
 veracrypt -t -c --volume-type="Normal" $veraid --encryption="AES" --hash="SHA-512" --filesystem="ntfs" --password="$vpass1" --pim=0
-#### Unlock the now encrypted drive
+
+#### Unlock the now encrypted drive and mount to /dev/mapper/ext
 echo -n "$vpass1" | cryptsetup tcryptOpen $veraid ext
+
 #### Install ntfs on the unencrypted drive
 mkfs.ntfs /dev/mapper/ext
-#### Mount the unencrypted ntfs to the correct location
+
+#### Mount the unencrypted ntfs to /mnt/ext
 mkdir /mnt/ext
 mount /dev/mapper/ext /mnt/ext
+
 #### Setup easy decryption for the future
 echo -e "\n/dev/mapper/ext /mnt/ext ntfs-3g uid=twoonesecond,gid=wheel,dmask=022,fmask=133 0 0" >> /etc/fstab
 echo -n "$vpass1" > /etc/ext
@@ -185,6 +200,9 @@ paru --noconfirm --needed -S "$cpu-ucode"
 mkdir -p /var/lib/libvirt/images
 chattr +C /var/lib/libvirt/images
 
+### Let users run sudo without password (for aur setup)
+echo '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' > /etc/sudoers.d/wheel_sudo
+
 ### Run the program installation loop
 installationloop 
 
@@ -194,6 +212,7 @@ sudo -u "$name" echo -e 'XDG_DESKTOP_DIR="$HOME/desktop"\nXDG_DOWNLOAD_DIR="$HOM
 sudo -u "$name" echo "enabled=False" >> /home/$name/.config/user-dirs.conf
 
 ### Setup profiles for snapper
+
 #### Create profiles for root and home
 snapper -c root create-config /
 snapper -c home create-config /home
@@ -232,53 +251,42 @@ echo "blacklist pcspkr" >/etc/modprobe.d/nobeep.conf
 systemctl enable snapper-timeline.timer
 systemctl enable snapper-cleanup.timer
 
-# Enable cron
+# Enable programs
 systemctl enable cronie
-
-# Enable btrfs in grub
-systemctl enable grub-btrfs.path
-
-# Enable sddm
-systemctl enable sddm
-
-# Enable upower
+systemctl enable grub-btrfsd # btrfs in grub
+systemctl enable sddm # Display manager
 systemctl enable upower
-
-# Enable libvirt 
 systemctl enable libvirtd
-
-# Enable docker
 systemctl enable docker
-
-# Enable cups (printer)
-systemctl enable cups
-
-# Enable auto cpufreq
-systemctl enable auto-cpufreq
-
-# Enable thermald
-systemctl enable thermald
-
-# Enable sshd
-systemctl enable sshd
-
-# Enable bluetooth
+systemctl enable cups # Printer service
+systemctl enable auto-cpufreq # Change cpu freq on battery
+systemctl enable thermald # Limit cpu temps
+systemctl enable sshd # allow sshing
+systemctl enable firewalld # firewall
 systemctl enable bluetooth
 
 ### Update grub config after install grub-btrfs
 grub-mkconfig -o /boot/grub/grub.cfg
 
 # Set npm global install location
-mkdir "/home/$name/.local"
-npm config set prefix "/home/$name/.local"
+sudo -u "$name" mkdir "/home/$name/.local"
+sudo -u "$name" npm config set prefix "/home/$name/.local"
 
 # Copy over wallpapers
-sudo -u "$name" mkdir /home/$name/pictures/
-git clone "$wallpaperrepo" "/home/$name/pictures/wallpaper"
+#sudo -u "$name" mkdir /home/$name/pictures/
+#git clone "$wallpaperrepo" "/home/$name/pictures/wallpaper"
 
 # Install good fonts
-maininstall "nerd-fonts-complete" "lots of fonts"
-fc-cache -fv
+#aurinstall "nerd-fonts-complete" "lots of fonts"
+#fc-cache -fv
+
+# Setup sddm theme
+git clone https://github.com/catppuccin/sddm.git /tmp/catppuccin
+mv /tmp/catppuccin/src/catppuccin-macchiato /usr/share/sddm/themes
+echo -e "[Theme]\nCurrent=catppuccin-macchiato" >> /etc/sddm.conf
+
+# Disable sudo without password (was for aur)
+rm /etc/sudoers.d/wheel_sudo
 
 # Allow wheel users to sudo with password and allow several system commands
 # (like `shutdown` to run without password).
@@ -288,4 +296,3 @@ echo "%wheel ALL=(ALL:ALL) NOPASSWD: /usr/bin/shutdown,/usr/bin/reboot,/usr/bin/
 echo "Finished running completely!"
 
 ## How to deal with git stow and dotfiles? You have no valid ssh cert with github at time of creation...
-## Kinda want lowercase file structure...

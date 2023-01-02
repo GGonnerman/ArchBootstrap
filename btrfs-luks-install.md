@@ -349,7 +349,8 @@ reboot
 nmtui
 ```
 
-### Run my startup script
+# Run my startup script
+# or...
 
 ### Add a new user (and add to wheel group)
 ```

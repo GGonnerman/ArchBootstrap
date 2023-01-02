@@ -12,6 +12,7 @@
 ,trash-cli,trash on the terminal
 ,tldr,simplified man pages
 ,htop,system monitor
+,stow,dotfiles manager
 # Utilities
 ,cronie,a time-based job scheduler
 ,openssh,a ssh client
