@@ -37,7 +37,8 @@ A,flashplayer-standalone,a flash player for old flash games
 # Sound Support
 ,wireplumber,a pipewire session manager
 ,pipewire,a sound server
-,pipewire-pulse,pipewire support for bluetooth devices
+,pipewire-pulse,pipewire support for pulse
+,pipewire-alsa,pipewire support for alsa
 ,alsa-utils,required for pavucontrol support
 ,pavucontrol,a terminal sound control gui
 # Bluetooth Support
