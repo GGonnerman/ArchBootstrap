@@ -282,7 +282,7 @@ sudo -u "$name" npm config set prefix "/home/$name/.local"
 
 # Copy over wallpapers
 #sudo -u "$name" mkdir /home/$name/pictures/
-#git clone "$wallpaperrepo" "/home/$name/pictures/wallpaper"
+#sudo -u "$name" git clone "$wallpaperrepo" "/home/$name/pictures/wallpaper"
 
 # Install good fonts
 #aurinstall "nerd-fonts-complete" "lots of fonts"
