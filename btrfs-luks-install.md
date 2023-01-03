@@ -356,7 +356,11 @@ findmnt -no UUID -T /swap/swapfile
 
 ##### Find the swap_file_offset using
 ```
-filefrag -v /swap/swapfile | awk '$1=="0:" {print substr($4, 1, length($4)-2)}'
+git clone https://github.com/osandov/osandov-linux.git /tmp/osandov-linux
+gcc -O2 -o /tmp/btrfs_map_physical /tmp/osandov-linux/scripts/btrfs_map_physical.c
+Get the physical offset (last item on first row)
+getconf PAGESIZE
+Then swap_file_offset = physical offset / pagesize
 ```
 
 ##### Add these to grub bootup
