@@ -138,19 +138,20 @@ btrfs subvolume create @tmp
 btrfs subvolume create @images
 btrfs subvolume create @backup
 btrfs subvolume create @downloads
+btrfs subvolume create @swap
 cd /
 umount /mnt
 mount -o compress=zstd,subvol=@ /dev/mapper/luks /mnt
 ```
 ##### Copy-paste version:
 ```
-cd /mnt ; btrfs subvolume create @ ; btrfs subvolume create @home ; btrfs subvolume create @log ; btrfs subvolume create @srv ; btrfs subvolume create @pkg ; btrfs subvolume create @tmp ; btrfs subvolume create @images ; btrfs subvolume create @backup ; btrfs subvolume create @downloads ; cd / ; umount /mnt ; mount -o compress=zstd,subvol=@ /dev/mapper/luks /mnt
+cd /mnt ; btrfs subvolume create @ ; btrfs subvolume create @home ; btrfs subvolume create @log ; btrfs subvolume create @srv ; btrfs subvolume create @pkg ; btrfs subvolume create @tmp ; btrfs subvolume create @images ; btrfs subvolume create @backup ; btrfs subvolume create @downloads ; btrfs subvolume create @swap ; cd / ; umount /mnt ; mount -o compress=zstd,subvol=@ /dev/mapper/luks /mnt
 ```
 
 #### Create filesystem directories
 ```
 cd /mnt
-mkdir -p {home,srv,var/{log,cache/pacman/pkg,lib/libvirt/images},tmp,backup}
+mkdir -p {home,srv,var/{log,cache/pacman/pkg,lib/libvirt/images},tmp,backup,swap}
 ```
 
 #### Associate filesystem directories to subvolumes
@@ -162,6 +163,7 @@ mount -o compress=zstd,subvol=@srv /dev/mapper/luks srv
 mount -o compress=zstd,subvol=@tmp /dev/mapper/luks tmp
 mount -o nodatacow,subvol=@images /dev/mapper/luks var/lib/libvirt/images
 mount -o nodatacow,subvol=@backup /dev/mapper/luks backup
+mount -o nodatacow,subvol=@swap /dev/mapper/luks swap
 mkdir /mnt/boot
 mount /dev/vda2 /mnt/boot
 mkdir /mnt/boot/EFI
@@ -169,11 +171,27 @@ mount /dev/vda1 /mnt/boot/EFI
 mkdir -p /mnt/mnt/ext
 mount -o uid=1000,gid=1000,dmask=022,fmask=027,windows_names /dev/vda4 /mnt/mnt/ext
 ```
-##### Copy-paste version:
+
+### Setup swapfile
 ```
-mount -o compress=zstd,subvol=@home /dev/mapper/luks home ; mount -o compress=zstd,subvol=@log /dev/mapper/luks var/log ; mount -o compress=zstd,subvol=@pkg /dev/mapper/luks var/cache/pacman/pkg ; mount -o compress=zstd,subvol=@srv /dev/mapper/luks srv ; mount -o compress=zstd,subvol=@tmp /dev/mapper/luks tmp ; mount -o nodatacow,subvol=@images /dev/mapper/luks var/lib/libvirt/images ; mount -o nodatacow,subvol=@backup /dev/mapper/luks backup ; mkdir /mnt/boot ; mount /dev/vda2 /mnt/boot ; mkdir /mnt/boot/EFI ; mount /dev/vda1 /mnt/boot/EFI ; mkdir -p /mnt/mnt/ext ; mount -o uid=1000,gid=1000,dmask=022,fmask=027,windows_names /dev/vda4 /mnt/mnt/ext
+touch /mnt/swap/swapfile
+chmod 600 /mnt/swap/swapfile
+chattr +C /mnt/swap/swapfile
+dd if=/dev/zero of=/mnt/swap/swapfile bs=1M count=20480 status=progress
+mkswap /mnt/swap/swapfile
+swapon /mnt/swap/swapfile
 ```
 
+### Disable CoW (Copy on Write) for images and backup
+```
+chattr +C var/lib/libvirt/images
+chattr +C backup
+```
+
+##### Copy-paste version:
+```
+mount -o compress=zstd,subvol=@home /dev/mapper/luks home ; mount -o compress=zstd,subvol=@log /dev/mapper/luks var/log ; mount -o compress=zstd,subvol=@pkg /dev/mapper/luks var/cache/pacman/pkg ; mount -o compress=zstd,subvol=@srv /dev/mapper/luks srv ; mount -o compress=zstd,subvol=@tmp /dev/mapper/luks tmp ; mount -o nodatacow,subvol=@images /dev/mapper/luks var/lib/libvirt/images ; mount -o nodatacow,subvol=@backup /dev/mapper/luks backup ; mount -o nodatacow,subvol=@swap /dev/mapper/luks swap ; mkdir /mnt/boot ; mount /dev/vda2 /mnt/boot ; mkdir /mnt/boot/EFI ; mount /dev/vda1 /mnt/boot/EFI ; mkdir -p /mnt/mnt/ext ; mount -o uid=1000,gid=1000,dmask=022,fmask=027,windows_names /dev/vda4 /mnt/mnt/ext ; touch /mnt/swap/swapfile ; chmod 600 /mnt/swap/swapfile ; chattr +C /mnt/swap/swapfile ; dd if=/dev/zero of=/mnt/swap/swapfile bs=1M count=20480 status=progress ; mkswap /mnt/swap/swapfile ; swapon /mnt/swap/swapfile ; chattr +C var/lib/libvirt/images ; chattr +C backup
+```
 
 ### Generate filesystem to table
 ```
@@ -216,7 +234,7 @@ w
 
 ### Rest as copy-paste
 ```
-mkfs.fat -F32 /dev/vda1 ; mkfs.ext4 /dev/vda2 ; mkfs.ntfs /dev/vda4 ; cryptsetup -y -v --cipher=aes-xts-plain64 --key-size=512 --hash=sha512 luksFormat /dev/vda3 ; cryptsetup luksOpen /dev/vda3 luks ; mkfs.btrfs -L archlinux /dev/mapper/luks ; mount -o compress=zstd /dev/mapper/luks /mnt ; cd /mnt ; btrfs subvolume create @ ; btrfs subvolume create @home ; btrfs subvolume create @log ; btrfs subvolume create @srv ; btrfs subvolume create @pkg ; btrfs subvolume create @tmp ; btrfs subvolume create @images ; btrfs subvolume create @backup ; btrfs subvolume create @downloads ; cd / ; umount /mnt ; mount -o compress=zstd,subvol=@ /dev/mapper/luks /mnt ; cd /mnt ; mkdir -p {home,srv,var/{log,cache/pacman/pkg,lib/libvirt/images},tmp,backup} ; mount -o compress=zstd,subvol=@home /dev/mapper/luks home ; mount -o compress=zstd,subvol=@log /dev/mapper/luks var/log ; mount -o compress=zstd,subvol=@pkg /dev/mapper/luks var/cache/pacman/pkg ; mount -o compress=zstd,subvol=@srv /dev/mapper/luks srv ; mount -o compress=zstd,subvol=@tmp /dev/mapper/luks tmp ; mount -o nodatacow,subvol=@images /dev/mapper/luks var/lib/libvirt/images ; mount -o nodatacow,subvol=@backup /dev/mapper/luks backup ; mkdir /mnt/boot ; mount /dev/vda2 /mnt/boot ; mkdir /mnt/boot/EFI ; mount /dev/vda1 /mnt/boot/EFI ; mkdir -p /mnt/mnt/ext ; mount -o uid=1000,gid=1000,dmask=022,fmask=027,windows_names /dev/vda4 /mnt/mnt/ext ; mkdir /mnt/etc ; genfstab -U /mnt >> /mnt/etc/fstab ; sed -Ei "s/^#(ParallelDownloads).*/\1 = 8/;/^#Color$/s/#//" /etc/pacman.conf
+mkfs.fat -F32 /dev/vda1 ; mkfs.ext4 /dev/vda2 ; mkfs.ntfs /dev/vda4 ; cryptsetup -y -v --cipher=aes-xts-plain64 --key-size=512 --hash=sha512 luksFormat /dev/vda3 ; cryptsetup luksOpen /dev/vda3 luks ; mkfs.btrfs -L archlinux /dev/mapper/luks ; mount -o compress=zstd /dev/mapper/luks /mnt ; cd /mnt ; btrfs subvolume create @ ; btrfs subvolume create @home ; btrfs subvolume create @log ; btrfs subvolume create @srv ; btrfs subvolume create @pkg ; btrfs subvolume create @tmp ; btrfs subvolume create @images ; btrfs subvolume create @backup ; btrfs subvolume create @downloads ; btrfs subvolume create @swap ; cd / ; umount /mnt ; mount -o compress=zstd,subvol=@ /dev/mapper/luks /mnt ; cd /mnt ; mkdir -p {home,srv,var/{log,cache/pacman/pkg,lib/libvirt/images},tmp,backup,swap} ; mount -o compress=zstd,subvol=@home /dev/mapper/luks home ; mount -o compress=zstd,subvol=@log /dev/mapper/luks var/log ; mount -o compress=zstd,subvol=@pkg /dev/mapper/luks var/cache/pacman/pkg ; mount -o compress=zstd,subvol=@srv /dev/mapper/luks srv ; mount -o compress=zstd,subvol=@tmp /dev/mapper/luks tmp ; mount -o nodatacow,subvol=@images /dev/mapper/luks var/lib/libvirt/images ; mount -o nodatacow,subvol=@backup /dev/mapper/luks backup ; mount -o nodatacow,subvol=@swap /dev/mapper/luks swap ; mkdir /mnt/boot ; mount /dev/vda2 /mnt/boot ; mkdir /mnt/boot/EFI ; mount /dev/vda1 /mnt/boot/EFI ; mkdir -p /mnt/mnt/ext ; mount -o uid=1000,gid=1000,dmask=022,fmask=027,windows_names /dev/vda4 /mnt/mnt/ext ; touch /mnt/swap/swapfile ; chmod 600 /mnt/swap/swapfile ; chattr +C /mnt/swap/swapfile ; dd if=/dev/zero of=/mnt/swap/swapfile bs=1M count=20480 status=progress ; mkswap /mnt/swap/swapfile ; swapon /mnt/swap/swapfile ; chattr +C var/lib/libvirt/images ; chattr +C backup ; mkdir /mnt/etc ; genfstab -U /mnt >> /mnt/etc/fstab ; sed -Ei "s/^#(ParallelDownloads).*/\1 = 8/;/^#Color$/s/#//" /etc/pacman.conf
 ```
 
 # Arch Install
@@ -273,10 +291,10 @@ nvim /etc/mkinitcpio.conf
 ```
 
 #### Change the line
-> HOOKS=(base udev autodetect modconf block filesystems keyboard fsck)
+> HOOKS=(base udev autodetect modconf kms keyboard keymap consolefont block filesystems fsck)
 
 #### to
-> HOOKS=(base udev autodetect modconf block encrypt filesystems keyboard fsck)
+> HOOKS=(base udev autodetect modconf kms keyboard keymap consolefont block **encrypt** filesystems **resume** fsck)
 
 #### Generate new initramfs
 
@@ -329,7 +347,24 @@ nvim /etc/default/grub
 #### to
 > GRUB_ENABLE_CRYPTODISK=y
 
-#### Generate the final config
+#### Enable hibernation
+
+##### Find the swap_device_uuid using
+```
+findmnt -no UUID -T /swap/swapfile
+```
+
+##### Find the swap_file_offset using
+```
+filefrag -v /swap/swapfile | awk '$1=="0:" {print substr($4, 1, length($4)-2)}'
+```
+
+##### Add these to grub bootup
+> GRUB_CMD_LINUX_DEFAULT="loglevel=3 quiet"
+
+> GRUB_CMD_LINUX_DEFAULT="loglevel=3 resume=UUID=*swap_device_uuid* resume_offset=*swap_file_offset*"
+
+##### Generate the final config
 ```
 grub-mkconfig -o /boot/grub/grub.cfg
 ```
@@ -406,11 +441,17 @@ hwclock --systohc
 systemctl enable systemd-timesyncd
 ```
 
-# TODO: Check if these packages are okay to be installed after
->   pacman-contrib \ # 
->   man-db \ # Man pages
->   sudo \ # Allow super user privileges
->   amd-ucode \ # Install amd microcode
-Then
->   nvidia \ # if installed linux
->   nvidia-lts \ # if installed linux-lts
+# Looking into hibernation support using a swapfile on btrfs under luks encryption
+## Create a swapfile
+touch /swap
+chattr +C /swapfile
+lsattr /swapfile
+dd if=/dev/zero of=/swapfile bs=1M count=1024 status=progress # for 1 gb
+chmod 0600 /swapfile
+mkswap -U clear /swapfile
+swapon /swapfile
+
+
+#### Add this to /etc/fstab
+UUID=XXXXXX /swap btrfs subvol=@swap 0 0
+/mnt/swap/swapfile none swap sw 0 0
