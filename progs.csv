@@ -95,7 +95,6 @@ A,visual-studio-code-bin,a gui code editor
 # Power Management/Hardware Support
 A,auto-cpufreq,automatic CPU speed & power optimizer
 ,thermald,Fan activation
-A,envycontrol,
 # Btrfs Full Support
 ,grub-btrfs,show btrfs backups in grub menu
 ,snap-pac,Automatically take btrfs snapshots pre/post update

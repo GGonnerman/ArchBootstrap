@@ -368,6 +368,51 @@ nmtui
 ```
 
 # Run my startup script
+### Then follow [this guide in the archlinux wiki](https://wiki.archlinux.org/title/NVIDIA#Installation)
+##### 1. If you do not know what graphics card you have, find out by issuing:
+```
+lspci -k | grep -A 2 -E "(VGA|3D)"
+```
+
+##### 2. Determine the necessary driver version for your card by:
+
+Visiting NVIDIA's driver download site and using the dropdown lists.
+Finding the code name (e.g. NV50, NVC0, etc.) on [nouveau wiki's code names page](https://nouveau.freedesktop.org/wiki/CodeNames/) or [nouveau's GitLab](https://gitlab.freedesktop.org/nouveau/wiki/-/blob/master/sources/CodeNames.mdwn), then looking up the name in NVIDIA's [legacy card list](https://www.nvidia.com/object/IO_32667.html): if your card is not there you can use the latest driver.
+
+##### 3. Install the appropriate driver for your card:
+
+Note:
+
+When installing dkms, read Dynamic Kernel Module Support#Installation
+nvidia may not boot on Linux 5.18 (or later) on systems with Intel CPUs due to FS#74886/FS#74891. Until this is fixed, a workaround is disabling the Indirect Branch Tracking CPU security feature by setting the ibt=off kernel parameter from the bootloader. This security feature is responsible for mitigating a class of exploit techniques, but is deemed safe as a temporary stopgap solution.
+
+For the Maxwell (NV110/GMXXX) series and newer, install the nvidia package (for use with the linux kernel) or nvidia-lts (for use with the linux-lts kernel) package.
+If these packages do not work, nvidia-betaAUR may have a newer driver version that offers support.
+Alternatively for the Turing (NV160/TUXXX) series or newer the nvidia-open package may be installed for open source kernel modules on the linux kernel (On other kernels nvidia-open-dkms must be used).
+This is currently alpha quality on desktop cards, so there will be issues. Due to nvidia-open issue #282, it does not work on systems that have AMD integrated GPUs.
+For the Kepler (NVE0/GKXXX) series, install the nvidia-470xx-dkmsAUR package.
+For the Fermi (NVC0/GF1XX) series, install the nvidia-390xx-dkmsAUR package.
+For even older cards, have a look at #Unsupported drivers.
+
+### For a 3060: I think you should install nvidia nvidia-utils nvidia-settings nvidia-prime envycontrol lib32-nvidia-utils
+
+##### 4. For 32-bit application support, also install the corresponding lib32 package from the multilib repository (e.g. lib32-nvidia-utils).
+
+##### 5. Remove kms from the HOOKS array in /etc/mkinitcpio.conf and regenerate the initramfs. This will prevent the initramfs from containing the nouveau module making sure the kernel cannot load it during early boot.
+
+###### If installed linux
+```
+mkinitcpio -p linux
+```
+###### If installed linux-lts
+```
+mkinitcpio -p linux-lts
+```
+
+##### 6. Reboot. The nvidia package contains a file which blacklists the nouveau module, so rebooting is necessary. 
+
+##### Once the driver has been installed, continue to [#Xorg](https://wiki.archlinux.org/title/NVIDIA#Xorg_configuration) configuration or [#Wayland](https://wiki.archlinux.org/title/NVIDIA#Wayland).
+
 # or...
 
 ### Add a new user (and add to wheel group)
