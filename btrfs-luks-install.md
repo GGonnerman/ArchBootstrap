@@ -245,7 +245,8 @@ pacstrap /mnt \
   grub efibootmgr os-prober \ # Bootloader
   ntfs-3g dosfstools mtools \ # File system tools for ms-dos
   networkmanager wireless_tools wpa_supplicant \ # Enable (wireless) networking
-  neovim # Neovim text editor
+  neovim \ # Neovim text editor
+  git # For btrfs swap file offset
 ```
 #### Copy-paste version:
 ```
@@ -358,7 +359,7 @@ findmnt -no UUID -T /swap/swapfile
 ```
 git clone https://github.com/osandov/osandov-linux.git /tmp/osandov-linux
 gcc -O2 -o /tmp/btrfs_map_physical /tmp/osandov-linux/scripts/btrfs_map_physical.c
-Get the physical offset (last item on first row)
+./tmp/btrfs_map_physical /swap/swapfile # Get the physical offset (last item on first row)
 getconf PAGESIZE
 Then swap_file_offset = physical offset / pagesize
 ```
