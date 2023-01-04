@@ -26,7 +26,7 @@ getuserandpass() {
 	while ! echo "$name" | grep -q "^[a-z_][a-z0-9_-]*$"; do
 		name=$(whiptail --nocancel --inputbox "Username not valid. Give a username beginning with a letter, with only lowercase letters, - or _." 10 60 3>&1 1>&2 2>&3 3>&1)
 	done
-	pass1=$(whiptail --nocancel --passwordbox "Enter a password for that user." 10 60 3>&1 1>&2 2>&3 3>&1)
+	pass1=$(whiptail --nocancel --passwordbox "Enter a password for that $name." 10 60 3>&1 1>&2 2>&3 3>&1)
 	pass2=$(whiptail --nocancel --passwordbox "Retype password." 10 60 3>&1 1>&2 2>&3 3>&1)
 	while ! [ "$pass1" = "$pass2" ]; do
 		unset pass2
@@ -72,7 +72,8 @@ querycpu() {
 
 adduserandpass() {
     useradd -m -G wheel -s /bin/zsh "$name" >/dev/null 2>&1 ||
-		usermod -a -G wheel "$name" && mkdir -p /home/"$name" && chown "$name":"$name" /home/"$name"
+		usermod -a -G wheel "$name" && mkdir -p /home/"$name" && chown "$name":"$name" /home/"$name" && chsh -s /bin/zsh "$name" >/dev/null 2>&1
+	sudo -u "$name" mkdir -p "/home/$name/.cache/zsh/"
 	export repodir="/home/$name/.local/src"
 	mkdir -p "$repodir"
 	chown -R "$name":"$name" "$(dirname "$repodir")"
@@ -148,7 +149,7 @@ sudo pacman -Syyy --noconfirm
 pacman --noconfirm -S archlinux-keyring || error "Error automatically refreshing Arch keyring"
 
 ### Install a small number of progarms needed to install other programs
-for x in curl paru pacman-contrib zsh veracrypt btrfs-progs arch-install-scripts; do
+for x in curl paru pacman-contrib git stow zsh veracrypt btrfs-progs arch-install-scripts; do
 	pacman --noconfirm --needed -S "$x" >/dev/null 2>&1
 done
 
@@ -194,50 +195,12 @@ echo -e "\n/dev/mapper/ext /mnt/ext ntfs-3g uid=$name,gid=$name,dmask=022,fmask=
 echo -n "$vpass1" > /etc/ext
 echo -e "\next $veraid /etc/ext tcrypt-veracrypt" >> /etc/crypttab
 
-### Installed the specified microcode
-paru --noconfirm --needed -S "$cpu-ucode"
-
-### Disable COW for virt-manager directory before it is filled
-mkdir -p /var/lib/libvirt/images
-chattr +C /var/lib/libvirt/images
-
 ### Setup dotfiles
 sudo -u "$name" git clone "$dotfilesrepohttps" "/home/$name/.dotfiles"
 pushd "/home/$name/.dotfiles"
 sudo -u "$name" git remote set-url origin "$dotfilesrepossh"
 sudo -u "$name" stow -S --adopt --dir="/home/$name/.dotfiles" --target="/home/$name" *
 popd
-
-### Let users run sudo without password (for aur setup)
-echo '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' > /etc/sudoers.d/wheel_sudo
-
-### Run the program installation loop
-installationloop 
-
-### Use lowercase letters for xdg dirs
-sudo -u "$name" mkdir -p /home/$name/.config
-sudo -u "$name" echo -e 'XDG_DESKTOP_DIR="$HOME/desktop"\nXDG_DOWNLOAD_DIR="$HOME/downloads"\nXDG_TEMPLATES_DIR="$HOME/templates"\nXDG_PUBLICSHARE_DIR="$HOME/public"\nXDG_DOCUMENTS_DIR="$HOME/documents"\nXDG_MUSIC_DIR="$HOME/music"\nXDG_PICTURES_DIR="$HOME/pictures"\nXDG_VIDEOS_DIR="$HOME/videos' > /home/$name/.config/user-dirs.dirs
-sudo -u "$name" echo "enabled=False" >> /home/$name/.config/user-dirs.conf
-
-### Setup profiles for snapper
-
-#### Create profiles for root and home
-snapper -c root create-config /
-snapper -c home create-config /home
-
-#### Disable timeline snapshots in root
-sed -i 's/TIMELINE_CREATE="yes"/TIMELINE_CREATE="no"/' /etc/snapper/configs/root
-
-#### Limit to 20 snapshots for root and home
-sed -i 's/NUMBER_LIMIT="50"/NUMBER_LIMIT="20"/' /etc/snapper/configs/root
-sed -i 's/NUMBER_LIMIT="50"/NUMBER_LIMIT="20"/' /etc/snapper/configs/home
-
-### Remove subvolid from fstab to allow restoring from backup
-sed -i 's/subvolid=.*,//' /etc/fstab
-
-### Set zsh as the default shell for the user
-chsh -s /bin/zsh "$name" >/dev/null 2>&1
-sudo -u "$name" mkdir -p "/home/$name/.cache/zsh/"
 
 ### Set hostname
 hostnamectl set-hostname "$myhostname"
@@ -255,9 +218,61 @@ systemctl enable systemd-timesyncd
 rmmod pcspkr
 echo "blacklist pcspkr" >/etc/modprobe.d/nobeep.conf
 
+# Copy over wallpapers
+#sudo -u "$name" mkdir /home/$name/pictures/
+#sudo -u "$name" git clone "$wallpaperrepo" "/home/$name/pictures/wallpaper"
+
+# Install good fonts
+#aurinstall "nerd-fonts-complete" "lots of fonts"
+#fc-cache -fv
+
+### Let users run in wheel sudo without password (for aur setup)
+echo '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' > /etc/sudoers.d/wheel_sudo
+
+### Install programs for btrfs support
+for x in grub-btrfs snap-pac snap-pac-grub btrfs-assistant btrfs-progs; do
+	sudo -u "$name" paru --noconfirm --needed -S "$x" >/dev/null 2>&1
+done
+
+### Setup profiles for snapper
+
+#### Create profiles for root and home
+snapper -c root create-config /
+snapper -c home create-config /home
+
+#### Disable timeline snapshots in root
+sed -i 's/TIMELINE_CREATE="yes"/TIMELINE_CREATE="no"/' /etc/snapper/configs/root
+
+#### Limit to 20 snapshots for root and home
+#sed -i 's/NUMBER_LIMIT="50"/NUMBER_LIMIT="20"/' /etc/snapper/configs/root
+#sed -i 's/NUMBER_LIMIT="50"/NUMBER_LIMIT="20"/' /etc/snapper/configs/home
+
 # Enable snapper timeline and cleanup
-systemctl enable snapper-timeline.timer
-systemctl enable snapper-cleanup.timer
+systemctl enable snapper-timeline.timer --now
+systemctl enable snapper-cleanup.timer --now
+
+### Remove subvolid from fstab to allow restoring from backup
+sed -i 's/subvolid=.*,//' /etc/fstab
+
+### Create a backup of root before installing programs
+rm /etc/sudoers.d/wheel_sudo # Temp remove sudo without password
+#btrfs subvolume snapshot / /.snapshots/original
+echo '%wheel ALL=(ALL:ALL) NOPASSWD: ALL' > /etc/sudoers.d/wheel_sudo # Reallow sudo without psasword
+
+### Installed the specified microcode
+paru --noconfirm --needed -S "$cpu-ucode"
+
+### Run the program installation loop
+installationloop 
+
+# Set npm global install location
+sudo -u "$name" mkdir "/home/$name/.local"
+sudo -u "$name" npm config set prefix "/home/$name/.local"
+
+### Use lowercase letters for xdg dirs
+sudo -u "$name" mkdir -p /home/$name/.config
+sudo -u "$name" echo -e 'XDG_DESKTOP_DIR="$HOME/desktop"\nXDG_DOWNLOAD_DIR="$HOME/downloads"\nXDG_TEMPLATES_DIR="$HOME/templates"\nXDG_PUBLICSHARE_DIR="$HOME/public"\nXDG_DOCUMENTS_DIR="$HOME/documents"\nXDG_MUSIC_DIR="$HOME/music"\nXDG_PICTURES_DIR="$HOME/pictures"\nXDG_VIDEOS_DIR="$HOME/videos' > /home/$name/.config/user-dirs.dirs
+sudo -u "$name" echo "enabled=False" >> /home/$name/.config/user-dirs.conf
 
 # Enable programs
 systemctl enable cronie
@@ -275,18 +290,6 @@ systemctl enable bluetooth
 
 ### Update grub config after install grub-btrfs
 grub-mkconfig -o /boot/grub/grub.cfg
-
-# Set npm global install location
-sudo -u "$name" mkdir "/home/$name/.local"
-sudo -u "$name" npm config set prefix "/home/$name/.local"
-
-# Copy over wallpapers
-#sudo -u "$name" mkdir /home/$name/pictures/
-#sudo -u "$name" git clone "$wallpaperrepo" "/home/$name/pictures/wallpaper"
-
-# Install good fonts
-#aurinstall "nerd-fonts-complete" "lots of fonts"
-#fc-cache -fv
 
 # Setup sddm theme
 git clone https://github.com/catppuccin/sddm.git /tmp/catppuccin
