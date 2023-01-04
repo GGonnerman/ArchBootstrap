@@ -245,8 +245,7 @@ pacstrap /mnt \
   grub efibootmgr os-prober \ # Bootloader
   ntfs-3g dosfstools mtools \ # File system tools for ms-dos
   networkmanager wireless_tools wpa_supplicant \ # Enable (wireless) networking
-  neovim \ # Neovim text editor
-  git # For btrfs swap file offset
+  neovim # Neovim text editor
 ```
 #### Copy-paste version:
 ```
@@ -295,7 +294,7 @@ nvim /etc/mkinitcpio.conf
 > HOOKS=(base udev autodetect modconf kms keyboard keymap consolefont block filesystems fsck)
 
 #### to
-> HOOKS=(base udev autodetect modconf kms keyboard keymap consolefont block **encrypt** filesystems **resume** fsck)
+> HOOKS=(base udev autodetect modconf kms keyboard keymap consolefont block **encrypt** filesystems fsck)
 
 #### Generate new initramfs
 
@@ -347,27 +346,6 @@ nvim /etc/default/grub
 
 #### to
 > GRUB_ENABLE_CRYPTODISK=y
-
-#### Enable hibernation
-
-##### Find the swap_device_uuid using
-```
-findmnt -no UUID -T /swap/swapfile
-```
-
-##### Find the swap_file_offset using
-```
-git clone https://github.com/osandov/osandov-linux.git /tmp/osandov-linux
-gcc -O2 -o /tmp/btrfs_map_physical /tmp/osandov-linux/scripts/btrfs_map_physical.c
-./tmp/btrfs_map_physical /swap/swapfile # Get the physical offset (last item on first row)
-getconf PAGESIZE
-Then swap_file_offset = physical offset / pagesize
-```
-
-##### Add these to grub bootup
-> GRUB_CMD_LINUX_DEFAULT="loglevel=3 quiet"
-
-> GRUB_CMD_LINUX_DEFAULT="loglevel=3 resume=UUID=*swap_device_uuid* resume_offset=*swap_file_offset*"
 
 ##### Generate the final config
 ```
