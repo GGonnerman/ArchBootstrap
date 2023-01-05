@@ -55,6 +55,7 @@ A,flashplayer-standalone,a flash player for old flash games
 ,atomicparsley,a dependency for yt-dlp
 # Gui Programs
 ,dolphin,file manager
+,ark,archive support for dolphin
 ,firefox,a web browser
 ,chromium,a web browser
 A,notion-app,a note taking app
