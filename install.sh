@@ -191,7 +191,7 @@ mkdir /mnt/ext
 mount /dev/mapper/ext /mnt/ext
 
 #### Setup easy decryption for the future
-echo -e "\n/dev/mapper/ext /mnt/ext ntfs-3g uid=$name,gid=$name,dmask=022,fmask=133 0 0" >> /etc/fstab
+echo -e "\n/dev/mapper/ext /mnt/ext ntfs-3g uid=$name,gid=$name,dmask=022,fmask=027,windows_names 0 0" >> /etc/fstab
 echo -n "$vpass1" > /etc/ext
 echo -e "\next $veraid /etc/ext tcrypt-veracrypt" >> /etc/crypttab
 
